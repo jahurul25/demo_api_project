@@ -1,0 +1,58 @@
+
+-------User Loign API----------
+http://127.0.0.1:8000/api/login
+user_name: jahurul25
+user_password: admin123
+method: POST
+
+
+-------Get All User List API----------
+http://127.0.0.1:8000/api/get-all-user
+method: GET
+user_token: need_user_token 
+
+
+-------Dashboard API----------
+http://127.0.0.1:8000/api/dashboard
+method: GET
+user_token: need_user_token 
+
+-------Find Single Inspection Data API----------
+http://127.0.0.1:8000/api/single-inspection
+method: POST
+serial_number: serial_number 
+user_token: need_user_token 
+
+
+-------Set Fine Amount API----------
+http://127.0.0.1:8000/api/set-fine-amount
+method: POST
+serial_number: serial_number 
+fine_amount: fine_amount 
+user_token: need_user_token 
+
+
+-------Create Inspection API----------
+http://127.0.0.1:8000/api/create-inspection
+method: POST
+user_token: need_user_token 
+user_name: user_name 
+distributor_name: distributor_name 
+option_one: option_one
+option_one_img: option_one_img 
+option_two: option_two 
+option_two_img: option_two_img 
+option_three: option_three 
+option_three_img: option_three_img 
+option_four: option_four 
+option_four_img: option_four_img 
+option_five: option_five 
+option_five_img: option_five_img 
+option_six: option_six 
+option_six_img: option_six_img 
+inspection_date: inspection_date
+
+
+
+
+
