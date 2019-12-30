@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
+from . import customValidation
 # Create your views here.
 
 @csrf_exempt
@@ -15,26 +16,31 @@ def user_login(request):
         if request.method == "POST":
             user_name = request.POST['user_name'].strip()
             user_password = request.POST['user_password'].strip()
-            user_pass_hash = hashlib.md5(user_password.encode())
-            getUserList = models.UserInfo.objects.filter(user_name = user_name, user_password = user_pass_hash.hexdigest(), status = True)
-            if getUserList:
-                token = hashlib.md5(user_name.encode()+str(getUserList[0].user_full_name).encode()+str(getUserList[0].created_date).encode())
-                user_token = str(''.join(random.choice(string.ascii_letters + string.digits) for i in range(15)))+str(token.hexdigest())
-                request.session["user_token__"] = user_token
-                data = {
-                    'message': "Login success",
-                    'status': True, 
-                    'user_token': user_token,
-                }
-                return JsonResponse(data, safe = False)
-            else:    
-                request.session["user_token__"] = None
-                return JsonResponse({'message': 'Login failed. Username or password invalid', 'status': False}, safe = False)
+            
+            chkValidInput = customValidation.chkUserValidation(user_name, user_password)
+            if chkValidInput == True:
+                user_pass_hash = hashlib.md5(user_password.encode())
+                getUserList = models.UserInfo.objects.filter(user_name = user_name, user_password = user_pass_hash.hexdigest(), status = True)
+                if getUserList:
+                    token = hashlib.md5(user_name.encode()+str(getUserList[0].user_full_name).encode()+str(getUserList[0].created_date).encode())
+                    user_token = str(''.join(random.choice(string.ascii_letters + string.digits) for i in range(15)))+str(token.hexdigest())
+                    request.session["user_token__"] = user_token
+                    data = {
+                        'message': "Login success",
+                        'status': True, 
+                        'user_token': user_token,
+                    }
+                    return JsonResponse(data, safe = False)
+                else:    
+                    request.session["user_token__"] = None
+                    return JsonResponse({'message': 'Login failed. Username or password invalid', 'status': False}, safe = False)
+            else:
+                return JsonResponse({'message': chkValidInput, 'status': False}, safe = False)
         else:
             request.session["user_token__"] = None
             return JsonResponse({'message': 'Your request is not valid', 'status': False}, safe = False)       
     except:
-        return JsonResponse({'message': 'server error', 'status': False}, safe = False)
+        return JsonResponse({'message': 'request not valid', 'status': False}, safe = False)
             
 def get_all_user(request):
     try:
@@ -48,7 +54,7 @@ def get_all_user(request):
         else:
             return JsonResponse({'message': 'Your request is not valid', 'status': False}, safe = False)   
     except:
-        return JsonResponse({'message': 'server error', 'status': False}, safe = False)
+        return JsonResponse({'message': 'request not valid', 'status': False}, safe = False)
             
             
 def dashboard(request):
@@ -68,11 +74,11 @@ def dashboard(request):
         else:
             return JsonResponse({'message': 'Your request is not valid', 'status': False}, safe = False)   
     except:
-        return JsonResponse({'message': 'server error', 'status': False}, safe = False)
+        return JsonResponse({'message': 'request not valid', 'status': False}, safe = False)
             
 @csrf_exempt            
 def create_inspection(request):
-     
+    try: 
         if request.method == "POST": 
             if request.session["user_token__"] == request.POST['user_token']:
                 user_name         = request.POST['user_name'].strip()
@@ -107,7 +113,8 @@ def create_inspection(request):
                 return JsonResponse({'message': 'Please login then try', 'status': False}, safe = False)   
         else:
             return JsonResponse({'message': 'Your request is not valid', 'status': False}, safe = False)   
-     
+    except:
+        return JsonResponse({'message': 'request not valid', 'status': False}, safe = False) 
 
 @csrf_exempt            
 def find_single_inspection(request):
@@ -121,7 +128,7 @@ def find_single_inspection(request):
         else:
             return JsonResponse({'message': 'Your request is not valid', 'status': False}, safe = False)   
     except:
-        return JsonResponse({'message': 'server error', 'status': False}, safe = False)  
+        return JsonResponse({'message': 'request not valid', 'status': False}, safe = False)  
 
                  
 @csrf_exempt            
@@ -147,4 +154,4 @@ def set_fine_amount(request):
         else:
             return JsonResponse({'message': 'Your request is not valid', 'status': False}, safe = False)   
     except:
-        return JsonResponse({'message': 'server error', 'status': False}, safe = False)  
+        return JsonResponse({'message': 'request not valid', 'status': False}, safe = False)  
