@@ -1,0 +1,174 @@
+{% extends 'commonapp/base.html' %}
+{% block title %} Return Books {% endblock %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="row">
+        <div class="col-md-12">
+           <div class="portlet light bordered">
+              <div class="portlet-title">
+                  <div class="caption font-green-haze">
+                      <i class="icon-pin"></i>
+                      <span class="caption-subject bold">Return Book </span>
+                  </div>
+                  <div class="actions">
+                      <i class="fa fa-hand-o-right"></i>
+                      <span class="caption-subject bold">
+                      <a class="caption-subject bold" href="#">
+                           <span class="caption-subject bold">Go to Return Book List</span></a>
+                      </span>
+                  </div>
+              </div>
+              <div class="portlet-body form" style="overflow:hidden;">
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <td class="lebel_center"> <strong>Student ID</strong> </td>
+                            <td>
+                                <input type="number" id="student_id" class="form-control" placeholder="Input Student ID" required>
+                            </td>
+                            <td class="lebel_center"> <strong>Barcode</strong> </td>
+                            <td>
+                                <input type="text" id="barcode" class="form-control" placeholder="Input Barcode here"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="table table-striped table-bordered" id = "book_list_tbl">
+                        
+                        <tbody>
+                        <tr>
+                        </tr>
+                    </tbody>
+                </table> 
+                
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'commonapp/bootstrap/js/jquery-3.2.0.min.js' %}" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+        $(document).ready(function(){
+             $("#student_id").focus();  
+        });   
+    
+        $("#barcode").click(function() {
+            this.focus();  
+        });
+    
+        $("#student_id").keydown(function (e) {
+            if(e.which == 13)  
+            {
+                if($("#student_id").val() == "")
+                {
+                    alert("Please Input Valid ID");
+                    return false;
+                }
+                $.ajax({
+                url: '/libraryapp/library/return-books/',
+                data: {
+                    'student_id': $('#student_id').val(),
+                },
+                success: function (data) {
+                    $('#book_list_tbl').html('');
+                    var tr;
+                        tr = $('<tr/>');
+                        tr.append("<th>" + 'Student Name'  + "</th>");
+                        tr.append("<th>" + 'Student ID' + "</th>");
+                        tr.append("<th>" + 'Book Name' + "</th>");
+                        tr.append("<th>" + 'Barcode' + "</th>");
+                        tr.append("<th>" + 'Issued Date' + "</th>");
+                        tr.append("<th>" + 'Targete Date' + "</th>");
+                        tr.append("<th class = 'center'>" + 'Quantity' + "</th>");
+                        tr.append("<th>" + 'Issued By' + "</th>");
+                        tr.append("<th>" + 'Action' + "</th>");
+
+                        $('#book_list_tbl').append(tr);
+                    
+                    for (var i = 0; i < data.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + data[i].stid_id__st_first_name + data[i].stid_id__st_last_name  + "</td>");
+                        tr.append("<td>" + data[i].stid_id__student_id + "</td>");
+                        tr.append("<td class = '"+data[i].id+"' >" + data[i].book_name_id__book_name + "</td>");
+                        tr.append("<td>" + data[i].barcode + "</td>");
+                        tr.append("<td>" + data[i].issue_date + "</td>");
+                        tr.append("<td>" + data[i].target_date + "</td>");
+                        tr.append("<td class = 'center'>" + data[i].quantity + "</td>");
+                        tr.append("<td>" + data[i].issued_by_id__employee_name + "</td>");
+                        tr.append("<td>" + '<input type="button" id="btnReturnBook" onclick="bookReturn('+data[i].id+')" value="Return Book" class="btn btn-success"/>' + "</td>");
+                        $('#book_list_tbl').append(tr);
+                    }
+
+                    $("#barcode").focus();
+                }
+            });
+            } 
+         });
+
+        $("#barcode").keydown(function (e) {
+            if(e.which == 13)  
+            {
+                if($("#student_id").val() == "" || $("#barcode").val() == "")
+                {
+                    alert("Please Input Valid Barcode");
+                    return false;
+                }
+                $.ajax({
+                url: '/libraryapp/library/return-books/',
+                data: {
+                    'student_id': $('#student_id').val(),
+                    'barcode': $('#barcode').val(),
+                },
+                success: function (data) {
+                    $('#book_list_tbl').html('');
+                    var tr;
+                    tr = $('<tr/>');
+                    tr.append("<th>" + 'Student Name'  + "</th>");
+                    tr.append("<th>" + 'Student ID' + "</th>");
+                    tr.append("<th>" + 'Book Name' + "</th>");
+                    tr.append("<th>" + 'Barcode' + "</th>");
+                    tr.append("<th>" + 'Issued Date' + "</th>");
+                    tr.append("<th>" + 'Targete Date' + "</th>");
+                    tr.append("<th class = 'center'>" + 'Quantity' + "</th>");
+                    tr.append("<th>" + 'Issued By' + "</th>");
+                    tr.append("<th>" + 'Action' + "</th>");
+
+                    $('#book_list_tbl').append(tr);
+                    
+                    for (var i = 0; i < data.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + data[i].stid_id__st_first_name + data[i].stid_id__st_last_name  + "</td>");
+                        tr.append("<td>" + data[i].stid_id__student_id + "</td>");
+                        tr.append("<td class = '"+data[i].id+"' >" + data[i].book_name_id__book_name + "</td>");
+                        tr.append("<td>" + data[i].barcode + "</td>");
+                        tr.append("<td>" + data[i].issue_date + "</td>");
+                        tr.append("<td>" + data[i].target_date + "</td>");
+                        tr.append("<td class = 'center'>" + data[i].quantity + "</td>");
+                        tr.append("<td>" + data[i].issued_by_id__employee_name + "</td>");
+                        tr.append("<td>" + '<input type="button" id="'+data[i].id+'" onclick="bookReturn('+data[i].id+')" value="Return Book" class="btn btn-success"/>' + "</td>");
+                        $('#book_list_tbl').append(tr);
+                    }
+                }
+            });
+            }
+         });
+        
+        function bookReturn(id){
+            var confirm_msg = confirm("Do you want to return "+$("."+id+"").html()+" book?");
+            if (confirm_msg == true)
+            { 
+                $.ajax({
+                    url: '/libraryapp/library/return-books/',
+                    data: {
+                        'issue_id':id,
+                    },
+                    success: function (data) {
+                        alert(data);
+                    }
+                });
+            }
+        } 
+    </script>   
+
+{% endblock %}
