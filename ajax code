@@ -1,3 +1,9 @@
+book = models.BookIssue.objects.values('id','book_name_id__book_name','stid_id__student_id','stid_id__st_first_name','stid_id__st_last_name','barcode','quantity','issue_date','target_date','issued_by_id__employee_name').filter(stid_id__student_id = student_id, barcode = barcode, return_status = False)
+     return JsonResponse(list(book), safe = False, content_type='application/json; charset=utf8')
+            
+
+
+
 {% extends 'commonapp/base.html' %}
 {% block title %} Return Books {% endblock %}
 {% load staticfiles %}
